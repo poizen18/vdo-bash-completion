@@ -3,39 +3,67 @@
 # Achilles Gaikwad
 # agaikwad@redhat.com
 
-# can I in someway do somthing like this : 
-# vdo activate --help | sed '1,/optional/d' | grep -v "                        " | awk {'print $1" "$2'}
-# What I am looking for is automation, rather than writing all the commands this way. 
-# Since I am the owner, I can do what I want :) Believe.
-# maybe talk with sorenson on what you can do?
 
-# this is awesome progress, got to know about the util _parse_usage which can help
-# me get the data that I need for a command, instead of doing the donkey work!! 
+## These functions will be used throughout the bash script
 
-_activate()
+# TODO: Change this directory to where vdo's volumes might exist once NOT activated. 
+
+_vdo_devdir()
+{
+    cur=${cur:-/dev/}
+    _filedir
+}
+
+# these options are most commonly used throughout multiple options, therefore I am going to 
+# add them here, so that modification in future could become easy. 
+
+_generic_options()
 {
  local cur prev words cword options
  _init_completion || return
+ # TODO : change the vdo activate to vdo $functionname instead below : 
+ COMPREPLY=( $( compgen -W '-n --name --all --confFile $( _parse_usage vdo activate --help )' -- "$cur" ) )
 
-# options = "-h|--help|-a|--all|--verbose|-n|--name|-f|--confFile|--logfile"
-# COMPREPLY=( $( compgen -W '${options}' -- "$cur" ) )
-
-COMPREPLY=( $( compgen -W '$( _parse_usage vdo activate --help )' -- "$cur" ) )
-
- #if [[ $cword -eq 1 ]]; then
-
- case $prev in
-#	 -h|--help|-a|--all|--verbose)
-#		             COMPREPLY=( $( compgen -W '-h|--help|-a|--all|--verbose' -- "$cur" ) )
-#
-# I don't think this is needed because you'll only want to go ahead with other stuff for below files
-# ;;
-
-	 -n|--name|-f|--confFile|--logfile)
-				_${words[1]}
-				;;
-
+ case "${prev}" in
+                -n|--name)
+                        _vdo_devdir
+                        ;;
+ # Since we're going to look for a log file, why not mention the direct path here instead? 
+                -f|--confFile|--logfile)
+                        _filedir
+                        ;;
  esac
+
+}
+
+## These functions exist to serve the one true King. 
+
+
+_changeWritePolicy()
+{
+ COMPREPLY=( $( compgen -W '--writePolicy -n --name --all --confFile $( _parse_usage vdo activate --help )' -- "$cur" ) )
+ _generic_options
+
+
+}
+
+_activate()
+{
+
+#
+# local cur prev words cword options
+# _init_completion || return
+# COMPREPLY=( $( compgen -W '-n --name --all --confFile $( _parse_usage vdo activate --help )' -- "$cur" ) )
+# case "${prev}" in
+#		-n|--name)
+#			_vdo_devdir
+#			;;
+# Since we're going to look for a log file, why not mention the direct path here instead? 
+#		-f|--confFile|--logfile)
+#			_filedir
+#			;;
+# esac
+_generic_options
 }
 
 
