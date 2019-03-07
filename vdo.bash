@@ -22,7 +22,7 @@ _generic_options()
  local cur prev words cword options
  _init_completion || return
  # TODO : change the vdo activate to vdo $functionname instead below : 
- COMPREPLY=( $( compgen -W '-n --name --all --confFile $( _parse_usage vdo activate --help )' -- "$cur" ) )
+ #COMPREPLY=( $( compgen -W '$OUTPUT_OPTIONS $( _parse_usage vdo activate --help )' -- "$cur" ) )
 
  case "${prev}" in
                 -n|--name)
@@ -41,29 +41,43 @@ _generic_options()
 
 _changeWritePolicy()
 {
- COMPREPLY=( $( compgen -W '--writePolicy -n --name --all --confFile $( _parse_usage vdo activate --help )' -- "$cur" ) )
- _generic_options
+ local cur prev words cword options
+ _init_completion || return
 
+ COMPREPLY=( $( compgen -W '--writePolicy -n --name --all --confFile $( _parse_usage vdo changeWritePolicy --help )' -- "$cur" ) )
+ case "${prev}" in
+	--writePolicy)
+		 COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
+		     ;;
+         -n|--name)
+             _vdo_devdir
+             ;;
+ # Since we're going to look for a log file, why not mention the direct path here instead? 
+         -f|--confFile|--logfile)
+         _filedir
+             ;;
 
+esac
+	return	
 }
 
 _activate()
 {
 
 #
-# local cur prev words cword options
-# _init_completion || return
-# COMPREPLY=( $( compgen -W '-n --name --all --confFile $( _parse_usage vdo activate --help )' -- "$cur" ) )
-# case "${prev}" in
-#		-n|--name)
-#			_vdo_devdir
-#			;;
+ local cur prev words cword options
+ _init_completion || return
+ COMPREPLY=( $( compgen -W '-n --name --all --confFile $( _parse_usage vdo activate --help )' -- "$cur" ) )
+ case "${prev}" in
+		-n|--name)
+			_vdo_devdir
+			;;
 # Since we're going to look for a log file, why not mention the direct path here instead? 
-#		-f|--confFile|--logfile)
-#			_filedir
-#			;;
-# esac
-_generic_options
+		-f|--confFile|--logfile)
+		_filedir
+			;;
+ esac
+return
 }
 
 
