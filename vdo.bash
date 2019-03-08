@@ -39,6 +39,28 @@ _generic_options()
 ## These functions exist to serve the one true King. 
 
 
+ _create()
+ {
+ 
+ #
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_usage vdo create )' -- "$cur" ) )
+  case "${prev}" in
+          --activate|--compression|--deduplication|--emulate512|--sparseIndex)
+	       COMPREPLY=( $( compgen -W 'disabled enabled' -- "$cur" ) )
+			;;
+  		  --writePolicy)
+           COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
+			;;
+		  --vdoLogLevel)
+		   COMPREPLY=( $( compgen -W 'critical error warning notice info debug' -- "$cur" ) )
+			;;
+	
+   esac
+ return
+ }
+
 _changeWritePolicy()
 {
  local cur prev words cword options
