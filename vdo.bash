@@ -7,7 +7,7 @@
 ## These functions will be used throughout the bash script
 
 
-# TODO: Change this directory to where vdo's volumes might exist once NOT activated. 
+# TODO: Change this directory to where vdo's volumes might exist once NOT activated.
 
 _vdo_devdir()
 {
@@ -15,14 +15,14 @@ _vdo_devdir()
     _filedir
 }
 
-DEFAULT="-n --name --all --confFile" 
+DEFAULT="-n --name --all --confFile"
 
-## These functions exist to serve the one true King. 
+## These functions exist to serve the one true King.
 
 
  _create()
  {
- 
+
  #
   local cur prev words cword options
   _init_completion || return
@@ -37,7 +37,7 @@ DEFAULT="-n --name --all --confFile"
 		  --vdoLogLevel)
 		   COMPREPLY=( $( compgen -W 'critical error warning notice info debug' -- "$cur" ) )
 			;;
-	
+
    esac
  return
  }
@@ -47,7 +47,7 @@ _changeWritePolicy()
  local cur prev words cword options
  _init_completion || return
 
- COMPREPLY=( $( compgen -W '--writePolicy -n --name --all --confFile $( _parse_usage vdo changeWritePolicy )' -- "$cur" ) )
+ COMPREPLY=( $( compgen -W '--writePolicy --name --all $( _parse_usage vdo changeWritePolicy )' -- "$cur" ) )
  case "${prev}" in
 	--writePolicy)
 		 COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
@@ -55,27 +55,32 @@ _changeWritePolicy()
          -n|--name)
              _vdo_devdir
              ;;
- # Since we're going to look for a log file, why not mention the direct path here instead? 
+ # Since we're going to look for a log file, why not mention the direct path here instead?
          -f|--confFile|--logfile)
          _filedir
              ;;
 
 esac
-	return	
+	return
 }
 
 _activate()
 {
 
-#
  local cur prev words cword options
  _init_completion || return
- COMPREPLY=( $( compgen -W '-n --name --all --confFile $( _parse_usage vdo activate --help )' -- "$cur" ) )
+ #COMPREPLY=( $( compgen -W '-n --name --all --confFile $( _parse_usage vdo activate )' -- "$cur" ) )
+
+COMPREPLY=( $( compgen -W '--all --name $( _parse_usage vdo activate )' -- "$cur" ) )
+
  case "${prev}" in
+   --all|-a)
+        return
+        ;;
 		-n|--name)
 			_vdo_devdir
 			;;
-# Since we're going to look for a log file, why not mention the direct path here instead? 
+# Since we're going to look for a log file, why not mention the direct path here instead?
 		-f|--confFile|--logfile)
 		_filedir
 			;;
@@ -103,4 +108,3 @@ _vdo()
     fi
 } &&
 complete -F _vdo vdo
-
