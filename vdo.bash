@@ -131,6 +131,14 @@ _deactivate()
   local cur prev words cword options
   _init_completion || return
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo deactivate )'  -- "$cur" ) )
+    case "${prev}" in
+        -f|--confFile|--logfile)
+         _filedir
+             ;;
+        -n|--name)
+             _vdo_devdir
+             ;;
+           esac
 }
 
 
@@ -151,7 +159,15 @@ _deactivate()
 		  --vdoLogLevel)
 		   COMPREPLY=( $( compgen -W 'critical error warning notice info debug' -- "$cur" ) )
 			;;
-
+      --device)
+        _vdo_devdir
+      ;;
+      --blockMapCacheSize|--maxDiscardSize|--vdoLogicalSize|--vdoSlabSize )
+                COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
+                ;;
+      -f|--confFile|--logfile)
+         _filedir
+             ;;
    esac
  return
  }
