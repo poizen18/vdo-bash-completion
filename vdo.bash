@@ -10,8 +10,8 @@ _parse_vdo_options()
 {
     eval local cmd=$( quote "$1" );
     local line;
-    { 
-        case $cmd in 
+    {
+        case $cmd in
             -)
                 cat
             ;;
@@ -37,9 +37,101 @@ _vdo_devdir()
     _filedir
 }
 
-DEFAULT="-n --name --all --confFile"
+_stop()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo stop  )'  -- "$cur" ) )
+}
+_status()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo status)'  -- "$cur" ) )
+}
+_start()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo start)'  -- "$cur" ) )
+}
+_remove()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo remove)'  -- "$cur" ) )
+}
+_printConfigFile()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo printConfigFile)'  -- "$cur" ) )
+}
+_modify()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo modify)'  -- "$cur" ) )
+}
+_list()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo list)'  -- "$cur" ) )
+}
+_growPhysical()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growPhysical )'  -- "$cur" ) )
+}
 
-## These functions exist to serve the one true King.
+
+_growLogical()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growLogical)'  -- "$cur" ) )
+}
+_enableDeduplication()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableDeduplication )'  -- "$cur" ) )
+}
+
+
+
+_enableCompression()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableCompression)'  -- "$cur" ) )
+}
+
+
+_disableDeduplication()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo disableDeduplication)'  -- "$cur" ) )
+}
+
+_disableCompression()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo disableCompression )'  -- "$cur" ) )
+}
+
+
+
+_deactivate()
+{
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo deactivate )'  -- "$cur" ) )
+}
 
 
  _create()
@@ -48,7 +140,7 @@ DEFAULT="-n --name --all --confFile"
  #
   local cur prev words cword options
   _init_completion || return
-  COMPREPLY=( $( compgen -W '${DEFAULT} $( _parse_usage vdo create )' -- "$cur" ) )
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo create )' -- "$cur" ) )
   case "${prev}" in
           --activate|--compression|--deduplication|--emulate512|--sparseIndex)
 	       COMPREPLY=( $( compgen -W 'disabled enabled' -- "$cur" ) )
@@ -69,7 +161,7 @@ _changeWritePolicy()
  local cur prev words cword options
  _init_completion || return
 
- COMPREPLY=( $( compgen -W '--writePolicy --name --all $( _parse_usage vdo changeWritePolicy )' -- "$cur" ) )
+ COMPREPLY=( $( compgen -W ' $( _parse_vdo_options vdo changeWritePolicy )' -- "$cur" ) )
  case "${prev}" in
 	--writePolicy)
 		 COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
@@ -91,10 +183,7 @@ _activate()
 
  local cur prev words cword options
  _init_completion || return
- #COMPREPLY=( $( compgen -W '-n --name --all --confFile $( _parse_usage vdo activate )' -- "$cur" ) )
-
 COMPREPLY=( $( compgen -W '--all --name $( _parse_vdo_options vdo activate )' -- "$cur" ) )
-#COMPREPLY=( $( compgen -W '--all --name $( _parse_vdo_options $1 $2 )' -- "$cur" ) )
 
  case "${prev}" in
    --all|-a)
