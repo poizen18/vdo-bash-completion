@@ -93,7 +93,8 @@ _activate()
  _init_completion || return
  #COMPREPLY=( $( compgen -W '-n --name --all --confFile $( _parse_usage vdo activate )' -- "$cur" ) )
 
-COMPREPLY=( $( compgen -W '--all --name $( _parse_usage vdo activate )' -- "$cur" ) )
+COMPREPLY=( $( compgen -W '--all --name $( _parse_vdo_options vdo activate )' -- "$cur" ) )
+#COMPREPLY=( $( compgen -W '--all --name $( _parse_vdo_options $1 $2 )' -- "$cur" ) )
 
  case "${prev}" in
    --all|-a)
