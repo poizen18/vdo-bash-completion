@@ -6,6 +6,28 @@
 
 ## These functions will be used throughout the bash script
 
+_parse_vdo_options()
+{
+    eval local cmd=$( quote "$1" );
+    local line;
+    { 
+        case $cmd in 
+            -)
+                cat
+            ;;
+            *)
+                LC_ALL=C "$( dequote "$cmd" )" $2 --help 2>&1
+            ;;
+        esac
+    }| while read -r line; do
+        [[ $line == *([[:blank:]])-* ]] || continue;
+        while [[ $line =~ ((^|[^-])-[A-Za-z0-9?][[:space:]]+)\[?[A-Z0-9]+\]? ]]; do
+            line=${line/"${BASH_REMATCH[0]}"/"${BASH_REMATCH[1]}"};
+        done;
+        __parse_options "${line// or /, }";
+    done
+}
+
 
 # TODO: Change this directory to where vdo's volumes might exist once NOT activated.
 
