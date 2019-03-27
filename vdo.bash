@@ -13,6 +13,17 @@
 ## Until then using a workaround of printing stuff via the variable
 ## DEFALT (intended spelling mistake.)
 
+## TODO : Create a single function for most common options such as --all, --logfile, etc.
+
+## TODO : vdo create --name <tab><tab> should output list of VDO devices
+## You need to do something like:
+# compgen -W "$(cd /dev/disk/by-uuid/ 2>/dev/null && echo *)" -- 3
+# 3f6bf06d-5dfe-41c8-bf11-bc56632822be
+# What I am doing here is, printing all the disk names, you can change
+# the path here, replace 3 with $cur :)
+
+
+## TODO :
 
 DEFALT='--help --all --name --confFile'
 
@@ -148,7 +159,24 @@ _modify()
   _init_completion || return
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo modify)'  -- "$cur" ) )
   ## This looks like create, get back to this later.
-
+  case "${prev}" in
+      --force|--verbose)
+         return
+      ;;
+# I probably shouldn't have added this.. note : remove this later.
+      --indexMem)
+        COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
+        ;;
+      --device|-n|--name)
+         _vdo_devdir
+      ;;
+      --blockMapCacheSize|--maxDiscardSize )
+         COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
+                ;;
+      -f|--confFile|--logfile)
+         _filedir
+             ;;
+   esac
 }
 _list()
 {
