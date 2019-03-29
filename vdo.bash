@@ -4,17 +4,6 @@
 # agaikwad@redhat.com
 
 
-
-## These functions will be used throughout the bash script
-
-## TODO : Right now what happens is the input is only parsed by taking the first
-## Option that appears, change it to only display options with two -'s
-## Example: --name instead of -n since it gives more information to user.
-## Until then using a workaround of printing stuff via the variable
-## DEFALT (intended spelling mistake.)
-
-## TODO : Create a single function for most common options such as --all, --logfile, etc.
-
 ## TODO : vdo create --name <tab><tab> should output list of VDO devices
 ## You need to do something like:
 # compgen -W "$(cd /dev/disk/by-uuid/ 2>/dev/null && echo *)" -- 3
@@ -23,75 +12,73 @@
 # the path here, replace 3 with $cur :)
 
 
-## TODO :
 
-DEFALT='--help --all --name --confFile'
 __parse_vdo_options ()
 {
-    local option option2 i IFS=',/|';
-    option=;
-    local -a array;
-    # Here goes the logic where I have to test, if the beginning is -
-    # then skip the first few and make it $1
-    if [[ $1 =~ --[A-Za-z0-9]+ ]] ; then
-      #echo "AMIGO ${BASH_REMATCH[0]}"
-      read -a array <<< "${BASH_REMATCH[0]}"
-    fi
+  local option option2 i IFS=',/|';
+  option=;
+  local -a array;
+  # Here goes the logic where I have to test, if the beginning is -
+  # then skip the first few and make it $1
+  if [[ $1 =~ --[A-Za-z0-9]+ ]] ; then
+    #echo "AMIGO ${BASH_REMATCH[0]}"
+    read -a array <<< "${BASH_REMATCH[0]}"
+  fi
 
-    #read -a array <<< "$1";
+  #read -a array <<< "$1";
 
-    for i in "${array[@]}";
-    do
-        case "$i" in
-            ---*)
-                break
-            ;;
-            --?*)
-                option=$i;
-                break
-            ;;
-            -?*)
-                [[ -n $option ]] || option=$i
-            ;;
-            *)
-                break
-            ;;
-        esac;
-    done;
-    [[ -n $option ]] || return;
-    IFS='
-';
-    if [[ $option =~ (\[((no|dont)-?)\]). ]]; then
-        option2=${option/"${BASH_REMATCH[1]}"/};
-        option2=${option2%%[<{().[]*};
-        printf '%s\n' "${option2/=*/=}";
-        option=${option/"${BASH_REMATCH[1]}"/"${BASH_REMATCH[2]}"};
-    fi;
-    option=${option%%[<{().[]*};
-    printf '%s\n' "${option/=*/=}"
+  for i in "${array[@]}";
+  do
+    case "$i" in
+      ---*)
+      break
+      ;;
+      --?*)
+      option=$i;
+      break
+      ;;
+      -?*)
+      [[ -n $option ]] || option=$i
+      ;;
+      *)
+      break
+      ;;
+    esac;
+  done;
+  [[ -n $option ]] || return;
+  IFS='
+  ';
+  if [[ $option =~ (\[((no|dont)-?)\]). ]]; then
+    option2=${option/"${BASH_REMATCH[1]}"/};
+    option2=${option2%%[<{().[]*};
+    printf '%s\n' "${option2/=*/=}";
+    option=${option/"${BASH_REMATCH[1]}"/"${BASH_REMATCH[2]}"};
+  fi;
+  option=${option%%[<{().[]*};
+  printf '%s\n' "${option/=*/=}"
 }
 
 _parse_vdo_options()
 {
-    eval local cmd=$( quote "$1" );
-    local line;
-    {
-        case $cmd in
-            -)
-                cat
-            ;;
-            *)
-                LC_ALL=C "$( dequote "$cmd" )" $2 --help 2>&1
-            ;;
-        esac
-    }| while read -r line; do
-        [[ $line == *([[:blank:]])-* ]] || continue;
-        while [[ $line =~ ((^|[^-])-[A-Za-z0-9?][[:space:]]+)\[?[A-Z0-9]+\]? ]]; do
-            line=${line/"${BASH_REMATCH[0]}"/"${BASH_REMATCH[1]}"};
-        done;
+  eval local cmd=$( quote "$1" );
+  local line;
+  {
+    case $cmd in
+      -)
+      cat
+      ;;
+      *)
+      LC_ALL=C "$( dequote "$cmd" )" $2 --help 2>&1
+      ;;
+    esac
+  }| while read -r line; do
+    [[ $line == *([[:blank:]])-* ]] || continue;
+    while [[ $line =~ ((^|[^-])-[A-Za-z0-9?][[:space:]]+)\[?[A-Z0-9]+\]? ]]; do
+      line=${line/"${BASH_REMATCH[0]}"/"${BASH_REMATCH[1]}"};
+    done;
     #    echo "${line// or /, } FOOBAR"
-        __parse_vdo_options "${line// or /, }";
-    done
+    __parse_vdo_options "${line// or /, }";
+  done
 }
 
 
@@ -99,8 +86,8 @@ _parse_vdo_options()
 
 _vdo_devdir()
 {
-    cur=${cur:-/dev/}
-    _filedir
+  cur=${cur:-/dev/}
+  _filedir
 }
 
 _stop()
@@ -109,17 +96,17 @@ _stop()
   _init_completion || return
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo stop  )'  -- "$cur" ) )
   case "${prev}" in
-        -f|--confFile|--logfile)
-          _filedir
-         ;;
-         -n|--name)
-         _vdo_devdir
-         ;;
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
 
-        --all|-a|--verbose)
-         return
+    --all|-a|--verbose)
+    return
 
-   esac
+  esac
 
 }
 _status()
@@ -129,17 +116,17 @@ _status()
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo status)'  -- "$cur" ) )
 
   case "${prev}" in
-        -f|--confFile|--logfile)
-          _filedir
-         ;;
-         -n|--name)
-         _vdo_devdir
-         ;;
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
 
-        --all|-a|--verbose)
-         return
+    --all|-a|--verbose)
+    return
 
-   esac
+  esac
 
 }
 _start()
@@ -148,18 +135,18 @@ _start()
   _init_completion || return
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo start)'  -- "$cur" ) )
 
-      case "${prev}" in
-            -f|--confFile|--logfile)
-              _filedir
-             ;;
-             -n|--name)
-             _vdo_devdir
-             ;;
+  case "${prev}" in
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
 
-            --all|-a|--verbose)
-             return
+    --all|-a|--verbose)
+    return
 
-       esac
+  esac
 
 }
 _remove()
@@ -169,18 +156,18 @@ _remove()
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo remove)'  -- "$cur" ) )
 
 
-      case "${prev}" in
-            -f|--confFile|--logfile)
-              _filedir
-             ;;
-             -n|--name)
-             _vdo_devdir
-             ;;
+  case "${prev}" in
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
 
-            --all|-a|--verbose)
-             return
+    --all|-a|--verbose)
+    return
 
-       esac
+  esac
 }
 _printConfigFile()
 {
@@ -189,14 +176,14 @@ _printConfigFile()
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo printConfigFile)'  -- "$cur" ) )
 
 
-      case "${prev}" in
-            -f|--confFile|--logfile)
-              _filedir
-             ;;
+  case "${prev}" in
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
 
-            --verbose)
-             return
-       esac
+    --verbose)
+    return
+  esac
 }
 _modify()
 {
@@ -205,23 +192,23 @@ _modify()
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo modify)'  -- "$cur" ) )
   ## This looks like create, get back to this later.
   case "${prev}" in
-      --force|--verbose)
-         return
-      ;;
-# I probably shouldn't have added this.. note : remove this later.
-      --indexMem)
-        COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
-        ;;
-      --device|-n|--name)
-         _vdo_devdir
-      ;;
-      --blockMapCacheSize|--maxDiscardSize )
-         COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
-                ;;
-      -f|--confFile|--logfile)
-         _filedir
-             ;;
-   esac
+    --force|--verbose)
+    return
+    ;;
+    # I probably shouldn't have added this.. note : remove this later.
+    --indexMem)
+    COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
+    ;;
+    --device|-n|--name)
+    _vdo_devdir
+    ;;
+    --blockMapCacheSize|--maxDiscardSize )
+    COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
+    ;;
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+  esac
 }
 _list()
 {
@@ -229,16 +216,16 @@ _list()
   _init_completion || return
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo list)'  -- "$cur" ) )
 
-      case "${prev}" in
-            -f|--confFile|--logfile)
-              _filedir
-             ;;
-            -n|--name)
-                 _vdo_devdir
-             ;;
-            --verbose|--all|-a)
-             return
-       esac
+  case "${prev}" in
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
+    --verbose|--all|-a)
+    return
+  esac
 }
 _growPhysical()
 {
@@ -246,16 +233,16 @@ _growPhysical()
   _init_completion || return
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growPhysical )'  -- "$cur" ) )
 
-      case "${prev}" in
-            -f|--confFile|--logfile)
-              _filedir
-             ;;
-            -n|--name)
-                 _vdo_devdir
-             ;;
-            --verbose)
-             return
-       esac
+  case "${prev}" in
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
+    --verbose)
+    return
+  esac
 }
 
 
@@ -266,17 +253,17 @@ _growLogical()
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growLogical)'  -- "$cur" ) )
 
 
-    case "${prev}" in
-          -f|--confFile|--logfile)
-            _filedir
-           ;;
-          -n|--name)
-               _vdo_devdir
-           ;;
-           --vdoLogicalSize)
-                COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
-                ;;
-     esac
+  case "${prev}" in
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
+    --vdoLogicalSize)
+    COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
+    ;;
+  esac
 }
 _enableDeduplication()
 {
@@ -285,16 +272,16 @@ _enableDeduplication()
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableDeduplication )'  -- "$cur" ) )
 
 
-    case "${prev}" in
-          -f|--confFile|--logfile)
-            _filedir
-           ;;
-          -n|--name)
-               _vdo_devdir
-           ;;
-          --verbose)
-           return
-     esac
+  case "${prev}" in
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
+    --verbose)
+    return
+  esac
 }
 
 
@@ -305,16 +292,16 @@ _enableCompression()
   _init_completion || return
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableCompression)'  -- "$cur" ) )
 
-    case "${prev}" in
-          -f|--confFile|--logfile)
-            _filedir
-           ;;
-          -n|--name)
-               _vdo_devdir
-           ;;
-          --verbose)
-           return
-     esac
+  case "${prev}" in
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
+    --verbose)
+    return
+  esac
 }
 
 
@@ -325,15 +312,15 @@ _disableDeduplication()
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo disableDeduplication)'  -- "$cur" ) )
 
   case "${prev}" in
-        -f|--confFile|--logfile)
-          _filedir
-         ;;
-        -n|--name)
-             _vdo_devdir
-         ;;
-        --verbose)
-         return
-   esac
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
+    --verbose)
+    return
+  esac
 
 }
 
@@ -344,12 +331,12 @@ _disableCompression()
   _init_completion || return
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo disableCompression )'  -- "$cur" ) )
   case "${prev}" in
-       -f|--confFile|--logfile)
-         _filedir
-        ;;
-       -n|--name)
-            _vdo_devdir
-        ;;
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
   esac
 }
 
@@ -361,116 +348,116 @@ _deactivate()
   local cur prev words cword options
   _init_completion || return
   COMPREPLY=( $( compgen -W ' $DEFALT $( _parse_vdo_options vdo deactivate )'  -- "$cur" ) )
-   case "${prev}" in
-        -f|--confFile|--logfile)
-          _filedir
-         ;;
-        -n|--name)
-             _vdo_devdir
-         ;;
-   esac
+  case "${prev}" in
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
+  esac
 }
 
 
- _create()
- {
+_create()
+{
 
- #
+  #
   local cur prev words cword options
   _init_completion || return
   COMPREPLY=( $( compgen -W '$(_parse_vdo_options vdo create)' -- "$cur" ) )
   case "${prev}" in
-      --force|--verbose)
-         return
-      ;;
-# I probably shouldn't have added this.. note : remove this later.
-      --indexMem)
-        COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
-        ;;
+    --force|--verbose)
+    return
+    ;;
+    # I probably shouldn't have added this.. note : remove this later.
+    --indexMem)
+    COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
+    ;;
 
-      --activate|--compression|--deduplication|--emulate512|--sparseIndex)
-	       COMPREPLY=( $( compgen -W 'disabled enabled' -- "$cur" ) )
-			;;
-  	  --writePolicy)
-         COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
-			;;
-		  --vdoLogLevel)
-		     COMPREPLY=( $( compgen -W 'critical error warning notice info debug' -- "$cur" ) )
-			;;
-      --device|-n|--name)
-         _vdo_devdir
-      ;;
-      --blockMapCacheSize|--maxDiscardSize|--vdoLogicalSize|--vdoSlabSize )
-         COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
-                ;;
-      -f|--confFile|--logfile)
-         _filedir
-             ;;
-   esac
- return
- }
+    --activate|--compression|--deduplication|--emulate512|--sparseIndex)
+    COMPREPLY=( $( compgen -W 'disabled enabled' -- "$cur" ) )
+    ;;
+    --writePolicy)
+    COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
+    ;;
+    --vdoLogLevel)
+    COMPREPLY=( $( compgen -W 'critical error warning notice info debug' -- "$cur" ) )
+    ;;
+    --device|-n|--name)
+    _vdo_devdir
+    ;;
+    --blockMapCacheSize|--maxDiscardSize|--vdoLogicalSize|--vdoSlabSize )
+    COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
+    ;;
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+  esac
+  return
+}
 
 _changeWritePolicy()
 {
- local cur prev words cword options
- _init_completion || return
+  local cur prev words cword options
+  _init_completion || return
 
- COMPREPLY=( $( compgen -W ' $( _parse_vdo_options vdo changeWritePolicy )' -- "$cur" ) )
- case "${prev}" in
-	--writePolicy)
-		 COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
-		     ;;
-         -n|--name)
-             _vdo_devdir
-             ;;
- # Since we're going to look for a log file, why not mention the direct path here instead?
-         -f|--confFile|--logfile)
-         _filedir
-             ;;
+  COMPREPLY=( $( compgen -W ' $( _parse_vdo_options vdo changeWritePolicy )' -- "$cur" ) )
+  case "${prev}" in
+    --writePolicy)
+    COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
+    # Since we're going to look for a log file, why not mention the direct path here instead?
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
 
-esac
-	return
+  esac
+  return
 }
 
 _activate()
 {
 
- local cur prev words cword options
- _init_completion || return
-COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo activate )' -- "$cur" ) )
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo activate )' -- "$cur" ) )
 
- case "${prev}" in
-   --all|-a)
-        return
-        ;;
-	-n|--name)
-		_vdo_devdir
-		;;
-# Since we're going to look for a log file, why not mention the direct path here instead?
-		-f|--confFile|--logfile)
-		_filedir
-			;;
- esac
-return
+  case "${prev}" in
+    --all|-a)
+    return
+    ;;
+    -n|--name)
+    _vdo_devdir
+    ;;
+    # Since we're going to look for a log file, why not mention the direct path here instead?
+    -f|--confFile|--logfile)
+    _filedir
+    ;;
+  esac
+  return
 }
 
 
 _vdo()
 {
-    local cur prev words cword
-    _init_completion || return
+  local cur prev words cword
+  _init_completion || return
 
-    if [[ $cword -eq 1 ]]; then
-        COMPREPLY=( $( compgen -W '
-	activate             changeWritePolicy    create               deactivate           disableCompression   disableDeduplication enableCompression    enableDeduplication growLogical          growPhysical         list                 modify               printConfigFile      remove               start status stop' -- "$cur" ) )
-    else
-        case "${words[1]}" in
-	            activate|changeWritePolicy|create|deactivate|disableCompression|disableDeduplication|\
-		    enableCompression|enableDeduplication|growLogical|growPhysical|list|modify|\
-		    printConfigFile|remove|start|status|stop)
-        					        _${words[1]}
-                ;;
-        esac
-    fi
+  if [[ $cword -eq 1 ]]; then
+    COMPREPLY=( $( compgen -W '
+    activate             changeWritePolicy    create               deactivate           disableCompression   disableDeduplication enableCompression    enableDeduplication growLogical          growPhysical         list                 modify               printConfigFile      remove               start status stop' -- "$cur" ) )
+  else
+    case "${words[1]}" in
+      activate|changeWritePolicy|create|deactivate|disableCompression|disableDeduplication|\
+      enableCompression|enableDeduplication|growLogical|growPhysical|list|modify|\
+      printConfigFile|remove|start|status|stop)
+      _${words[1]}
+      ;;
+    esac
+  fi
 } &&
 complete -F _vdo vdo
