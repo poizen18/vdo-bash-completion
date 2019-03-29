@@ -26,6 +26,50 @@
 ## TODO :
 
 DEFALT='--help --all --name --confFile'
+__parse_vdo_options ()
+{
+    local option option2 i IFS=',/|';
+    option=;
+    local -a array;
+    # Here goes the logic where I have to test, if the beginning is -
+    # then skip the first few and make it $1
+    if [[ $1 =~ --[A-Za-z0-9]+ ]] ; then
+      #echo "AMIGO ${BASH_REMATCH[0]}"
+      read -a array <<< "${BASH_REMATCH[0]}"
+    fi
+
+    #read -a array <<< "$1";
+
+    for i in "${array[@]}";
+    do
+        case "$i" in
+            ---*)
+                break
+            ;;
+            --?*)
+                option=$i;
+                break
+            ;;
+            -?*)
+                [[ -n $option ]] || option=$i
+            ;;
+            *)
+                break
+            ;;
+        esac;
+    done;
+    [[ -n $option ]] || return;
+    IFS='
+';
+    if [[ $option =~ (\[((no|dont)-?)\]). ]]; then
+        option2=${option/"${BASH_REMATCH[1]}"/};
+        option2=${option2%%[<{().[]*};
+        printf '%s\n' "${option2/=*/=}";
+        option=${option/"${BASH_REMATCH[1]}"/"${BASH_REMATCH[2]}"};
+    fi;
+    option=${option%%[<{().[]*};
+    printf '%s\n' "${option/=*/=}"
+}
 
 _parse_vdo_options()
 {
@@ -45,7 +89,8 @@ _parse_vdo_options()
         while [[ $line =~ ((^|[^-])-[A-Za-z0-9?][[:space:]]+)\[?[A-Z0-9]+\]? ]]; do
             line=${line/"${BASH_REMATCH[0]}"/"${BASH_REMATCH[1]}"};
         done;
-        __parse_options "${line// or /, }";
+    #    echo "${line// or /, } FOOBAR"
+        __parse_vdo_options "${line// or /, }";
     done
 }
 
