@@ -2,7 +2,7 @@
 # bash completion for vdo command
 # Achilles Gaikwad
 # agaikwad@redhat.com
-
+# March 2019
 
 ## TODO : vdo create --name <tab><tab> should output list of VDO devices
 ## You need to do something like:
@@ -94,6 +94,7 @@ _stop()
 {
   local cur prev words cword options
   _init_completion || return
+
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo stop  )'  -- "$cur" ) )
   case "${prev}" in
     -f|--confFile|--logfile)
@@ -102,13 +103,11 @@ _stop()
     -n|--name)
     _vdo_devdir
     ;;
-
     --all|-a|--verbose)
     return
-
   esac
-
 }
+
 _status()
 {
   local cur prev words cword options
@@ -122,13 +121,11 @@ _status()
     -n|--name)
     _vdo_devdir
     ;;
-
     --all|-a|--verbose)
     return
-
   esac
-
 }
+
 _start()
 {
   local cur prev words cword options
@@ -142,10 +139,8 @@ _start()
     -n|--name)
     _vdo_devdir
     ;;
-
     --all|-a|--verbose)
     return
-
   esac
 
 }
@@ -153,9 +148,8 @@ _remove()
 {
   local cur prev words cword options
   _init_completion || return
+
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo remove)'  -- "$cur" ) )
-
-
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
@@ -173,22 +167,22 @@ _printConfigFile()
 {
   local cur prev words cword options
   _init_completion || return
+
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo printConfigFile)'  -- "$cur" ) )
-
-
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
     ;;
-
     --verbose)
     return
   esac
 }
+
 _modify()
 {
   local cur prev words cword options
   _init_completion || return
+
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo modify)'  -- "$cur" ) )
   ## This looks like create, get back to this later.
   case "${prev}" in
@@ -210,12 +204,13 @@ _modify()
     ;;
   esac
 }
+
 _list()
 {
   local cur prev words cword options
   _init_completion || return
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo list)'  -- "$cur" ) )
 
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo list)'  -- "$cur" ) )
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
@@ -227,12 +222,13 @@ _list()
     return
   esac
 }
+
 _growPhysical()
 {
   local cur prev words cword options
   _init_completion || return
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growPhysical )'  -- "$cur" ) )
 
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growPhysical )'  -- "$cur" ) )
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
@@ -250,9 +246,8 @@ _growLogical()
 {
   local cur prev words cword options
   _init_completion || return
+
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growLogical)'  -- "$cur" ) )
-
-
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
@@ -265,13 +260,13 @@ _growLogical()
     ;;
   esac
 }
+
 _enableDeduplication()
 {
   local cur prev words cword options
   _init_completion || return
+
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableDeduplication )'  -- "$cur" ) )
-
-
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
@@ -290,8 +285,8 @@ _enableCompression()
 {
   local cur prev words cword options
   _init_completion || return
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableCompression)'  -- "$cur" ) )
 
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableCompression)'  -- "$cur" ) )
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
@@ -309,8 +304,8 @@ _disableDeduplication()
 {
   local cur prev words cword options
   _init_completion || return
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo disableDeduplication)'  -- "$cur" ) )
 
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo disableDeduplication)'  -- "$cur" ) )
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
@@ -321,7 +316,6 @@ _disableDeduplication()
     --verbose)
     return
   esac
-
 }
 
 
@@ -329,6 +323,7 @@ _disableCompression()
 {
   local cur prev words cword options
   _init_completion || return
+
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo disableCompression )'  -- "$cur" ) )
   case "${prev}" in
     -f|--confFile|--logfile)
@@ -340,13 +335,11 @@ _disableCompression()
   esac
 }
 
-
-
-
 _deactivate()
 {
   local cur prev words cword options
   _init_completion || return
+
   COMPREPLY=( $( compgen -W ' $DEFALT $( _parse_vdo_options vdo deactivate )'  -- "$cur" ) )
   case "${prev}" in
     -f|--confFile|--logfile)
@@ -358,11 +351,8 @@ _deactivate()
   esac
 }
 
-
 _create()
 {
-
-  #
   local cur prev words cword options
   _init_completion || return
   COMPREPLY=( $( compgen -W '$(_parse_vdo_options vdo create)' -- "$cur" ) )
@@ -374,7 +364,6 @@ _create()
     --indexMem)
     COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
     ;;
-
     --activate|--compression|--deduplication|--emulate512|--sparseIndex)
     COMPREPLY=( $( compgen -W 'disabled enabled' -- "$cur" ) )
     ;;
@@ -410,7 +399,6 @@ _changeWritePolicy()
     -n|--name)
     _vdo_devdir
     ;;
-    # Since we're going to look for a log file, why not mention the direct path here instead?
     -f|--confFile|--logfile)
     _filedir
     ;;
@@ -421,11 +409,10 @@ _changeWritePolicy()
 
 _activate()
 {
-
   local cur prev words cword options
   _init_completion || return
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo activate )' -- "$cur" ) )
 
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo activate )' -- "$cur" ) )
   case "${prev}" in
     --all|-a)
     return
@@ -433,14 +420,12 @@ _activate()
     -n|--name)
     _vdo_devdir
     ;;
-    # Since we're going to look for a log file, why not mention the direct path here instead?
     -f|--confFile|--logfile)
     _filedir
     ;;
   esac
   return
 }
-
 
 _vdo()
 {
