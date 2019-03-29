@@ -228,8 +228,6 @@ _growLogical()
           -n|--name)
                _vdo_devdir
            ;;
-          --verbose)
-           return
            --vdoLogicalSize)
                 COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
                 ;;
