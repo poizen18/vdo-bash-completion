@@ -11,22 +11,16 @@
 # What I am doing here is, printing all the disk names, you can change
 # the path here, replace 3 with $cur :)
 
-
+## TODO: You must create procedures inside each function
 
 __parse_vdo_options ()
 {
   local option option2 i IFS=',/|';
   option=;
   local -a array;
-  # Here goes the logic where I have to test, if the beginning is -
-  # then skip the first few and make it $1
   if [[ $1 =~ --[A-Za-z0-9]+ ]] ; then
-    #echo "AMIGO ${BASH_REMATCH[0]}"
     read -a array <<< "${BASH_REMATCH[0]}"
   fi
-
-  #read -a array <<< "$1";
-
   for i in "${array[@]}";
   do
     case "$i" in
@@ -157,10 +151,8 @@ _remove()
     -n|--name)
     _vdo_devdir
     ;;
-
     --all|-a|--verbose)
     return
-
   esac
 }
 _printConfigFile()
@@ -240,7 +232,6 @@ _growPhysical()
     return
   esac
 }
-
 
 _growLogical()
 {
@@ -402,7 +393,6 @@ _changeWritePolicy()
     -f|--confFile|--logfile)
     _filedir
     ;;
-
   esac
   return
 }
@@ -414,7 +404,7 @@ _activate()
 
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo activate )' -- "$cur" ) )
   case "${prev}" in
-    --all|-a)
+    --verbose|--all|-a)
     return
     ;;
     -n|--name)
