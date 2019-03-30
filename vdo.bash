@@ -4,14 +4,6 @@
 # agaikwad@redhat.com
 
 
-## TODO : vdo create --name <tab><tab> should output list of VDO devices
-## You need to do something like:
-# compgen -W "$(cd /dev/disk/by-uuid/ 2>/dev/null && echo *)" -- 3
-# 3f6bf06d-5dfe-41c8-bf11-bc56632822be
-# What I am doing here is, printing all the disk names, you can change
-# the path here, replace 3 with $cur :)
-
-## TODO: You must create procedures inside each function
 
 __parse_vdo_options ()
 {
@@ -84,7 +76,7 @@ local cur prev words cword options
 #  cur=${cur:-/dev/}
 # OK, so this is pretty DOPE!
 # What this will do is, print out UUID's and then
-# MAGIC! The prefix would be added ;) I am pretty proud about this one :D 
+# MAGIC! The prefix would be added ;) I am pretty proud about this one :D
   COMPREPLY=( $( compgen -W "$(cd /dev/disk/by-uuid/ 2>/dev/null && echo *)" -P "/dev/disk/by-uuid/" -- "$cur" ))
 #  return
   _filedir
@@ -99,9 +91,6 @@ _stop()
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
-    ;;
-    -n|--name)
-    _vdo_devdir
     ;;
     --all|-a|--verbose)
     return
@@ -118,9 +107,6 @@ _status()
     -f|--confFile|--logfile)
     _filedir
     ;;
-    -n|--name)
-    _vdo_devdir
-    ;;
     --all|-a|--verbose)
     return
   esac
@@ -136,9 +122,6 @@ _start()
     -f|--confFile|--logfile)
     _filedir
     ;;
-    -n|--name)
-    _vdo_devdir
-    ;;
     --all|-a|--verbose)
     return
   esac
@@ -153,9 +136,6 @@ _remove()
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
-    ;;
-    -n|--name)
-    _vdo_devdir
     ;;
     --all|-a|--verbose)
     return
@@ -191,7 +171,7 @@ _modify()
     --indexMem)
     COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
     ;;
-    --device|-n|--name)
+    --device)
     _vdo_devdir
     ;;
     --blockMapCacheSize|--maxDiscardSize )
@@ -213,9 +193,6 @@ _list()
     -f|--confFile|--logfile)
     _filedir
     ;;
-    -n|--name)
-    _vdo_devdir
-    ;;
     --verbose|--all|-a)
     return
   esac
@@ -230,9 +207,6 @@ _growPhysical()
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
-    ;;
-    -n|--name)
-    _vdo_devdir
     ;;
     --verbose)
     return
@@ -249,9 +223,6 @@ _growLogical()
     -f|--confFile|--logfile)
     _filedir
     ;;
-    -n|--name)
-    _vdo_devdir
-    ;;
     --vdoLogicalSize)
     COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
     ;;
@@ -267,9 +238,6 @@ _enableDeduplication()
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
-    ;;
-    -n|--name)
-    _vdo_devdir
     ;;
     --verbose)
     return
@@ -288,9 +256,6 @@ _enableCompression()
     -f|--confFile|--logfile)
     _filedir
     ;;
-    -n|--name)
-    _vdo_devdir
-    ;;
     --verbose)
     return
   esac
@@ -306,9 +271,6 @@ _disableDeduplication()
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
-    ;;
-    -n|--name)
-    _vdo_devdir
     ;;
     --verbose)
     return
@@ -326,9 +288,6 @@ _disableCompression()
     -f|--confFile|--logfile)
     _filedir
     ;;
-    -n|--name)
-    _vdo_devdir
-    ;;
   esac
 }
 
@@ -341,9 +300,6 @@ _deactivate()
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
-    ;;
-    -n|--name)
-    _vdo_devdir
     ;;
   esac
 }
@@ -398,9 +354,6 @@ _changeWritePolicy()
     --writePolicy)
     COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
     ;;
-    -n|--name)
-    _vdo_devdir
-    ;;
     -f|--confFile|--logfile)
     _filedir
     ;;
@@ -415,11 +368,8 @@ _activate()
 
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo activate )' -- "$cur" ) )
   case "${prev}" in
-    --verbose|--all|-a)
+    --verbose|--all|-a|-n|--name)
     return
-    ;;
-    -n|--name)
-    _vdo_devdir
     ;;
     -f|--confFile|--logfile)
     _filedir
@@ -435,12 +385,14 @@ _vdo()
 
   if [[ $cword -eq 1 ]]; then
     COMPREPLY=( $( compgen -W '
-    activate             changeWritePolicy    create               deactivate           disableCompression   disableDeduplication enableCompression    enableDeduplication growLogical          growPhysical         list                 modify               printConfigFile      remove               start status stop' -- "$cur" ) )
+    activate changeWritePolicy create deactivate disableCompression
+    disableDeduplication enableCompression enableDeduplication growLogical
+    growPhysical list modify printConfigFile remove start status stop' -- "$cur" ) )
   else
     case "${words[1]}" in
-      activate|changeWritePolicy|create|deactivate|disableCompression|disableDeduplication|\
-      enableCompression|enableDeduplication|growLogical|growPhysical|list|modify|\
-      printConfigFile|remove|start|status|stop)
+      activate|changeWritePolicy|create|deactivate|disableCompression|\
+      disableDeduplication|enableCompression|enableDeduplication|growLogical|\
+      growPhysical|list|modify|printConfigFile|remove|start|status|stop)
       _${words[1]}
       ;;
     esac
