@@ -2,7 +2,7 @@
 # bash completion for vdo command
 # Achilles Gaikwad
 # agaikwad@redhat.com
-# March 2019
+
 
 ## TODO : vdo create --name <tab><tab> should output list of VDO devices
 ## You need to do something like:
