@@ -314,6 +314,8 @@ _create()
 # [A] All the options use = as SUFFIX
 # [B] If they do use it, how do I get rid of the last "space" after the completion?
 #  COMPREPLY=( $( compgen -W '$(_parse_vdo_options vdo create)' -S '=' -- "$cur" ) )
+# I hope that this comment goes unnoticed by maintainers, and then in future this maybe a 
+# easter egg? well... one can hope. Afterall, the answer has always been 42 :) 
   case "${prev}" in
     --force|--verbose)
     return
@@ -399,3 +401,4 @@ _vdo()
   fi
 } &&
 complete -F _vdo vdo
+
