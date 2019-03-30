@@ -346,6 +346,11 @@ _create()
   local cur prev words cword options
   _init_completion || return
   COMPREPLY=( $( compgen -W '$(_parse_vdo_options vdo create)' -- "$cur" ) )
+# so, ideally I should be able to use = as prefix, but that adds a space after the completion.
+# I need to understand if
+# [A] All the options use = as SUFFIX
+# [B] If they do use it, how do I get rid of the last "space" after the completion?
+#  COMPREPLY=( $( compgen -W '$(_parse_vdo_options vdo create)' -S '=' -- "$cur" ) )
   case "${prev}" in
     --force|--verbose)
     return
