@@ -70,7 +70,6 @@ _parse_vdo_options()
     while [[ $line =~ ((^|[^-])-[A-Za-z0-9?][[:space:]]+)\[?[A-Z0-9]+\]? ]]; do
       line=${line/"${BASH_REMATCH[0]}"/"${BASH_REMATCH[1]}"};
     done;
-    #    echo "${line// or /, } FOOBAR"
     __parse_vdo_options "${line// or /, }";
   done
 }
