@@ -79,7 +79,14 @@ _parse_vdo_options()
 
 _vdo_devdir()
 {
-  cur=${cur:-/dev/}
+local cur prev words cword options
+  _init_completion || return
+#  cur=${cur:-/dev/}
+# OK, so this is pretty DOPE!
+# What this will do is, print out UUID's and then
+# MAGIC! The prefix would be added ;) I am pretty proud about this one :D 
+  COMPREPLY=( $( compgen -W "$(cd /dev/disk/by-uuid/ 2>/dev/null && echo *)" -P "/dev/disk/by-uuid/" -- "$cur" ))
+#  return
   _filedir
 }
 
@@ -368,7 +375,7 @@ _create()
     --vdoLogLevel)
     COMPREPLY=( $( compgen -W 'critical error warning notice info debug' -- "$cur" ) )
     ;;
-    --device|-n|--name)
+    --device)
     _vdo_devdir
     ;;
     --blockMapCacheSize|--maxDiscardSize|--vdoLogicalSize|--vdoSlabSize )
