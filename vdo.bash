@@ -72,14 +72,8 @@ _parse_vdo_options()
 _vdo_devdir()
 {
 local cur prev words cword options
-  _init_completion || return
-#  cur=${cur:-/dev/}
-# OK, so this is pretty DOPE!
-# What this will do is, print out UUID's and then
-# MAGIC! The prefix would be added ;) I am pretty proud about this one :D
-  COMPREPLY=( $( compgen -W "$(cd /dev/disk/by-uuid/ 2>/dev/null && echo *)" -P "/dev/disk/by-uuid/" -- "$cur" ))
-#  return
-  _filedir
+_init_completion || return
+COMPREPLY=( $( compgen -W "$(lsblk -pnro name)" -- "$cur" ))
 }
 
 _stop()
@@ -314,8 +308,6 @@ _create()
 # [A] All the options use = as SUFFIX
 # [B] If they do use it, how do I get rid of the last "space" after the completion?
 #  COMPREPLY=( $( compgen -W '$(_parse_vdo_options vdo create)' -S '=' -- "$cur" ) )
-# I hope that this comment goes unnoticed by maintainers, and then in future this maybe a 
-# easter egg? well... one can hope. Afterall, the answer has always been 42 :) 
   case "${prev}" in
     --force|--verbose)
     return
@@ -401,4 +393,3 @@ _vdo()
   fi
 } &&
 complete -F _vdo vdo
-
