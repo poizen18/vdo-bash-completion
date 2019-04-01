@@ -23,24 +23,34 @@ Also, I learnt another thing, it is only difficult in the beginning. If you keep
 You will need "bash-completions" command installed 
 You can get it for RHEL/CENTOS/FEDORA by executing the following command: 
 
+!! IMPORTANT !! 
 
  `# yum -y install bash-completion`
-
+ 
+ start a new shell 
+ 
+ 
+ `# bash`
 
 Once you've bash completion in place, you now need the vdo.bash file in your completions directory.
 So, first clone this repo!
  
- `# git clone https://github.com/poizen18/vdo-bashcomp.git`
+ 
+ `$ git clone https://github.com/poizen18/vdo-bashcomp.git`
+ 
+
+ `$ cd vdo-bash-completion`
  
  
- `# sudo install vdo.bash /usr/share/bash-completion/completions/`
+ `$ sudo install vdo.bash /usr/share/bash-completion/completions/`
  
- 
+
  `# source  /usr/share/bash-completion/completions/vdo.bash`
+ 
  
  # Test it !! 
  
- ` # vdo <tab><tab> `
+` # vdo <tab><tab> `
  
  
  # BUGS! 
