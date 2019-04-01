@@ -4,8 +4,6 @@
 # agaikwad@redhat.com
 # https://github.com/poizen18/vdo-bash-completion
 
-
-# TODO: Add --name and -n to print the vdo volume names by parsing the config file from /etc/
 __parse_vdo_options ()
 {
   local option option2 i IFS=',/|';
@@ -80,16 +78,7 @@ _vdo_names()
 {
 local cur prev words cword options
 _init_completion || return
-#names=()
-#while IFS= read -r line
-#do
-#        if [[ $line =~ \!VDOService ]]; then
-#                names+=( $(echo $line | cut -d: -f1) )
-#        fi
-#done < /etc/vdoconf.yml
-
 COMPREPLY=( $( compgen -W "$(vdo list --all) -- "$cur" ))
-#You should use vdo list --all
 }
 
 _stop()
