@@ -75,6 +75,24 @@ local cur prev words cword options
 _init_completion || return
 COMPREPLY=( $( compgen -W "$(lsblk -pnro name)" -- "$cur" ))
 }
+## If there are already some VDO devices created, we read them into an
+## array 'names' and then give them as an option for COMPREPLY.
+
+_vdo_names()
+{
+local cur prev words cword options
+_init_completion || return
+names=()
+while IFS= read -r line
+do
+        if [[ $line =~ \!VDOService ]]; then
+                names+=( $(echo $line | cut -d: -f1) )
+        fi
+done < /etc/vdoconf.yml
+
+COMPREPLY=( $( compgen -W "$names" -- "$cur" ))
+#You should use vdo list --all
+}
 
 _stop()
 {
@@ -199,6 +217,9 @@ _growPhysical()
 
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growPhysical )'  -- "$cur" ) )
   case "${prev}" in
+    -n|--name)
+    _vdo_names
+    ;;
     -f|--confFile|--logfile)
     _filedir
     ;;
@@ -214,6 +235,9 @@ _growLogical()
 
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growLogical)'  -- "$cur" ) )
   case "${prev}" in
+    -n|--name)
+    _vdo_names
+    ;;
     -f|--confFile|--logfile)
     _filedir
     ;;
@@ -230,6 +254,9 @@ _enableDeduplication()
 
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableDeduplication )'  -- "$cur" ) )
   case "${prev}" in
+    -n|--name)
+      _vdo_names
+      ;;
     -f|--confFile|--logfile)
     _filedir
     ;;
@@ -247,6 +274,9 @@ _enableCompression()
 
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableCompression)'  -- "$cur" ) )
   case "${prev}" in
+    -n|--name)
+    _vdo_names
+    ;;
     -f|--confFile|--logfile)
     _filedir
     ;;
@@ -263,6 +293,9 @@ _disableDeduplication()
 
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo disableDeduplication)'  -- "$cur" ) )
   case "${prev}" in
+    -n|--name)
+    _vdo_names
+    ;;
     -f|--confFile|--logfile)
     _filedir
     ;;
@@ -282,6 +315,9 @@ _disableCompression()
     -f|--confFile|--logfile)
     _filedir
     ;;
+    -n|--name)
+    _vdo_names
+    ;;
   esac
 }
 
@@ -294,6 +330,9 @@ _deactivate()
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
+    ;;
+    -n|--name)
+    _vdo_names
     ;;
   esac
 }
@@ -313,9 +352,9 @@ _create()
     return
     ;;
     # I probably shouldn't have added this.. note : remove this later.
-    --indexMem)
-    COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
-    ;;
+    #--indexMem)
+    #COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
+    #;;
     --activate|--compression|--deduplication|--emulate512|--sparseIndex)
     COMPREPLY=( $( compgen -W 'disabled enabled' -- "$cur" ) )
     ;;
@@ -345,6 +384,9 @@ _changeWritePolicy()
 
   COMPREPLY=( $( compgen -W ' $( _parse_vdo_options vdo changeWritePolicy )' -- "$cur" ) )
   case "${prev}" in
+    -n|--name)
+    _vdo_names
+    ;;
     --writePolicy)
     COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
     ;;
@@ -362,11 +404,14 @@ _activate()
 
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo activate )' -- "$cur" ) )
   case "${prev}" in
-    --verbose|--all|-a|-n|--name)
+    --verbose|--all|-a|)
     return
     ;;
     -f|--confFile|--logfile)
     _filedir
+    ;;
+    -n|--name)
+    _vdo_names
     ;;
   esac
   return
