@@ -5,7 +5,7 @@
 # https://github.com/poizen18/vdo-bash-completion
 
 
-# TODO: Add --name and -n to print the vdo volume names by parsing the config file from /etc/ 
+# TODO: Add --name and -n to print the vdo volume names by parsing the config file from /etc/
 __parse_vdo_options ()
 {
   local option option2 i IFS=',/|';
@@ -89,7 +89,7 @@ do
 done < /etc/vdoconf.yml
 
 COMPREPLY=( $( compgen -W "$names" -- "$cur" ))
-#You should use vdo list --all
+#You should use vdo list --all 
 }
 
 _stop()
