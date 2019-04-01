@@ -157,10 +157,10 @@ _modify()
     --force|--verbose)
     return
     ;;
-    # I probably shouldn't have added this.. note : remove this later.
-    --indexMem)
-    COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
-    ;;
+# I probably shouldn't have added this.. note : remove this later.
+#    --indexMem)
+#    COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
+#    ;;
     --device)
     _vdo_devdir
     ;;
