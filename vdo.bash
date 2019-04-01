@@ -88,10 +88,11 @@ _stop()
 }
 
 _status()
+{
   local cur prev words cword options
   _init_completion || return
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo status)'  -- "$cur" ) )
-  {
+  
 
   case "${prev}" in
     -f|--confFile|--logfile)
