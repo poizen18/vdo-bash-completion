@@ -77,7 +77,6 @@ _vdo_names()
 local cur prev words cword options
 _init_completion || return
 COMPREPLY=( $( compgen -W "$(vdo list --all)" -- "$cur" ))
-
 }
 
 _stop()
@@ -382,7 +381,7 @@ _activate()
 
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo activate )' -- "$cur" ) )
   case "${prev}" in
-    --verbose|--all|-a|)
+    --verbose|--all|-a)
     return
     ;;
     -f|--confFile|--logfile)
