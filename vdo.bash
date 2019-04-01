@@ -5,6 +5,7 @@
 # https://github.com/poizen18/vdo-bash-completion
 
 
+# TODO: Add --name and -n to print the vdo volume names by parsing the config file from /etc/ 
 __parse_vdo_options ()
 {
   local option option2 i IFS=',/|';
@@ -66,9 +67,6 @@ _parse_vdo_options()
   done
 }
 
-
-# TODO: Change this directory to where vdo's volumes might exist once NOT activated.
-
 _vdo_devdir()
 {
 local cur prev words cword options
@@ -114,6 +112,7 @@ _status()
   local cur prev words cword options
   _init_completion || return
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo status)'  -- "$cur" ) )
+
 
   case "${prev}" in
     -f|--confFile|--logfile)
@@ -179,10 +178,10 @@ _modify()
     --force|--verbose)
     return
     ;;
-    # I probably shouldn't have added this.. note : remove this later.
-    --indexMem)
-    COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
-    ;;
+# I probably shouldn't have added this.. note : remove this later.
+#    --indexMem)
+#    COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
+#    ;;
     --device)
     _vdo_devdir
     ;;
@@ -265,8 +264,6 @@ _enableDeduplication()
   esac
 }
 
-
-
 _enableCompression()
 {
   local cur prev words cword options
@@ -285,7 +282,6 @@ _enableCompression()
   esac
 }
 
-
 _disableDeduplication()
 {
   local cur prev words cword options
@@ -303,7 +299,6 @@ _disableDeduplication()
     return
   esac
 }
-
 
 _disableCompression()
 {
@@ -342,11 +337,6 @@ _create()
   local cur prev words cword options
   _init_completion || return
   COMPREPLY=( $( compgen -W '$(_parse_vdo_options vdo create)' -- "$cur" ) )
-# so, ideally I should be able to use = as prefix, but that adds a space after the completion.
-# I need to understand if
-# [A] All the options use = as SUFFIX
-# [B] If they do use it, how do I get rid of the last "space" after the completion?
-#  COMPREPLY=( $( compgen -W '$(_parse_vdo_options vdo create)' -S '=' -- "$cur" ) )
   case "${prev}" in
     --force|--verbose)
     return
