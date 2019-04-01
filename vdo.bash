@@ -71,14 +71,13 @@ local cur prev words cword options
 _init_completion || return
 COMPREPLY=( $( compgen -W "$(lsblk -pnro name)" -- "$cur" ))
 }
-## If there are already some VDO devices created, we read them into an
-## array 'names' and then give them as an option for COMPREPLY.
 
 _vdo_names()
 {
 local cur prev words cword options
 _init_completion || return
-COMPREPLY=( $( compgen -W "$(vdo list --all) -- "$cur" ))
+COMPREPLY=( $( compgen -W "$(vdo list --all)" -- "$cur" ))
+
 }
 
 _stop()
