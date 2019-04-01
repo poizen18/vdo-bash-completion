@@ -80,16 +80,16 @@ _vdo_names()
 {
 local cur prev words cword options
 _init_completion || return
-names=()
-while IFS= read -r line
-do
-        if [[ $line =~ \!VDOService ]]; then
-                names+=( $(echo $line | cut -d: -f1) )
-        fi
-done < /etc/vdoconf.yml
+#names=()
+#while IFS= read -r line
+#do
+#        if [[ $line =~ \!VDOService ]]; then
+#                names+=( $(echo $line | cut -d: -f1) )
+#        fi
+#done < /etc/vdoconf.yml
 
-COMPREPLY=( $( compgen -W "$names" -- "$cur" ))
-#You should use vdo list --all 
+COMPREPLY=( $( compgen -W "$(vdo list --all) -- "$cur" ))
+#You should use vdo list --all
 }
 
 _stop()
