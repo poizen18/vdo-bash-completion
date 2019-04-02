@@ -57,7 +57,7 @@ So, first clone this repo!
  `$ cd /tmp/ ; git clone https://github.com/poizen18/vdo-bashcomp.git`
  
 
- `$ cd vdo-bash-completion`
+ `$ cd vdo-bashcomp`
  
  
  `$ sudo install vdo.bash /usr/share/bash-completion/completions/`
