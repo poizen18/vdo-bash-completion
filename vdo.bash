@@ -8,6 +8,10 @@
 # Where the location of confFile would be manually provided, we
 # Should be able to read from that file :)
 
+# Why not have a function that does call something like :
+# function is $1, the argument is $2 and then everything else lies in the same
+# block.
+
 CONF_FILE=/etc/vdoconf.yml
 
 __parse_vdo_options()
@@ -103,252 +107,33 @@ _vdo_names()
   COMPREPLY=( $( compgen -W "$names" -- "$cur" ))
 }
 
-_stop()
+_generic_function()
 {
+# Added activate , works fine
   local cur prev words cword options
   _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo stop  )'  -- "$cur" ) )
+  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo $1 )' -- "$cur" ) )
   case "${prev}" in
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-    --all|-a|--verbose)
-    return
-  esac
-}
-
-_status()
-{
-  local cur prev words cword options
-  _init_completion || return
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo status)'  -- "$cur" ) )
-
-
-  case "${prev}" in
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-    --all|-a|--verbose)
-    return
-  esac
-}
-
-_start()
-{
-  local cur prev words cword options
-  _init_completion || return
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo start)'  -- "$cur" ) )
-
-  case "${prev}" in
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-    --all|-a|--verbose)
-    return
-  esac
-
-}
-_remove()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo remove)'  -- "$cur" ) )
-  case "${prev}" in
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-    --all|-a|--verbose)
-    return
-  esac
-}
-_printConfigFile()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo printConfigFile)'  -- "$cur" ) )
-  case "${prev}" in
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-    --verbose)
-    return
-  esac
-}
-
-_modify()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo modify)'  -- "$cur" ) )
-  ## This looks like create, get back to this later.
-  case "${prev}" in
-    --force|--verbose)
-    return
-    ;;
-    # I probably shouldn't have added this.. note : remove this later.
-    #    --indexMem)
-    #    COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
-    #    ;;
-    --device)
-    _vdo_devdir
-    ;;
-    --blockMapCacheSize|--maxDiscardSize )
-    COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
-    ;;
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-  esac
-}
-
-_list()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo list)'  -- "$cur" ) )
-  case "${prev}" in
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
     --verbose|--all|-a)
     return
-  esac
-}
-
-_growPhysical()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growPhysical )'  -- "$cur" ) )
-  case "${prev}" in
-    -n|--name)
-    _vdo_names
-    ;;
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-    --verbose)
-    return
-  esac
-}
-
-_growLogical()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo growLogical)'  -- "$cur" ) )
-  case "${prev}" in
-    -n|--name)
-    _vdo_names
-    ;;
-    -f|--confFile|--logfile)
-    _filedir
     ;;
     --vdoLogicalSize)
     COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
     ;;
-  esac
-}
-
-_enableDeduplication()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableDeduplication )'  -- "$cur" ) )
-  case "${prev}" in
-    -n|--name)
-    _vdo_names
-    ;;
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-    --verbose)
-    return
-  esac
-}
-
-_enableCompression()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableCompression)'  -- "$cur" ) )
-  case "${prev}" in
-    -n|--name)
-    _vdo_names
-    ;;
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-    --verbose)
-    return
-  esac
-}
-
-_disableDeduplication()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo disableDeduplication)'  -- "$cur" ) )
-  case "${prev}" in
-    -n|--name)
-    _vdo_names
-    ;;
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-    --verbose)
-    return
-  esac
-}
-
-_disableCompression()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo disableCompression )'  -- "$cur" ) )
-  case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
     ;;
     -n|--name)
-    _vdo_names
+        if [[ "$1" == "create" ]]
+        then
+          return
+        else
+          _vdo_names
+        fi
     ;;
-  esac
-}
-
-_deactivate()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W ' $( _parse_vdo_options vdo deactivate )'  -- "$cur" ) )
-  case "${prev}" in
-    -f|--confFile|--logfile)
-    _filedir
+    --writePolicy)
+    COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
     ;;
-    -n|--name)
-    _vdo_names
-    ;;
-  esac
-}
-
-_create()
-{
-  local cur prev words cword options
-  _init_completion || return
-  COMPREPLY=( $( compgen -W '$(_parse_vdo_options vdo create)' -- "$cur" ) )
-  case "${prev}" in
     --force|--verbose)
     return
     ;;
@@ -362,54 +147,15 @@ _create()
     COMPREPLY=( $( compgen -W 'critical error warning notice info debug' -- "$cur" ) )
     ;;
     --device)
-    _vdo_devdir
-    ;;
+      _vdo_devdir
+      ;;
     --blockMapCacheSize|--maxDiscardSize|--vdoLogicalSize|--vdoSlabSize )
     COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
     ;;
-    -f|--confFile|--logfile)
-    _filedir
+    --blockMapCacheSize|--maxDiscardSize )
+    COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
     ;;
-  esac
-  return
-}
 
-_changeWritePolicy()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W ' $( _parse_vdo_options vdo changeWritePolicy )' -- "$cur" ) )
-  case "${prev}" in
-    -n|--name)
-    _vdo_names
-    ;;
-    --writePolicy)
-    COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
-    ;;
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-  esac
-  return
-}
-
-_activate()
-{
-  local cur prev words cword options
-  _init_completion || return
-
-  COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo activate )' -- "$cur" ) )
-  case "${prev}" in
-    --verbose|--all|-a)
-    return
-    ;;
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
-    -n|--name)
-    _vdo_names
-    ;;
   esac
   return
 }
@@ -429,7 +175,8 @@ _vdo()
       activate|changeWritePolicy|create|deactivate|disableCompression|\
       disableDeduplication|enableCompression|enableDeduplication|growLogical|\
       growPhysical|list|modify|printConfigFile|remove|start|status|stop)
-      _${words[1]}
+#      _${words[1]}
+	   _generic_function ${words[1]}
       ;;
     esac
   fi
