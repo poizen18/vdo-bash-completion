@@ -10,7 +10,7 @@
 
 CONF_FILE=/etc/vdoconf.yml
 
-__parse_vdo_options ()
+__parse_vdo_options()
 {
   local option option2 i IFS=',/|';
   option=;
