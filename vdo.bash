@@ -9,8 +9,8 @@
 # Should be able to read from that file :)
 
 # Why not have a function that does call something like :
-# function is $1, the argument is $2 and then everything else lies in the same
-# block.
+# function is $1, the argument is $2 and then everything else lies in
+# the same block.
 
 CONF_FILE=/etc/vdoconf.yml
 
@@ -68,7 +68,8 @@ _parse_vdo_options()
     esac
   }| while read -r line; do
     [[ $line == *([[:blank:]])-* ]] || continue;
-    while [[ $line =~ ((^|[^-])-[A-Za-z0-9?][[:space:]]+)\[?[A-Z0-9]+\]? ]]; do
+    while [[ $line =~ \
+((^|[^-])-[A-Za-z0-9?][[:space:]]+)\[?[A-Z0-9]+\]? ]]; do
       line=${line/"${BASH_REMATCH[0]}"/"${BASH_REMATCH[1]}"};
     done;
     __parse_vdo_options "${line// or /, }";
@@ -136,7 +137,8 @@ _generic_function()
     COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
     ;;
     --vdoLogLevel)
-    COMPREPLY=( $( compgen -W 'critical error warning notice info debug' -- "$cur" ) )
+    COMPREPLY=( $( compgen -W \
+'critical error warning notice info debug' -- "$cur" ) )
     ;;
     --device)
       _vdo_devdir
@@ -161,13 +163,14 @@ _vdo()
     COMPREPLY=( $( compgen -W '
     activate changeWritePolicy create deactivate disableCompression
     disableDeduplication enableCompression enableDeduplication growLogical
-    growPhysical list modify printConfigFile remove start status stop' -- "$cur" ) )
+    growPhysical list modify printConfigFile remove start status 
+	stop' -- "$cur" ) )
   else
     case "${words[1]}" in
       activate|changeWritePolicy|create|deactivate|disableCompression|\
-      disableDeduplication|enableCompression|enableDeduplication|growLogical|\
-      growPhysical|list|modify|printConfigFile|remove|start|status|stop)
-#      _${words[1]}
+      disableDeduplication|enableCompression|enableDeduplication|\
+      growLogical|growPhysical|list|modify|printConfigFile|remove|\
+      start|status|stop)
 	   _generic_function ${words[1]}
       ;;
     esac
