@@ -174,5 +174,3 @@ _vdo()
   fi
 } &&
 complete -F _vdo vdo
-
-# TODO: FIX VDO NAMES BEING PRINTED!!!
