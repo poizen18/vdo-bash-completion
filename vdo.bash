@@ -4,9 +4,9 @@
 # agaikwad@redhat.com
 # https://github.com/poizen18/vdo-bash-completion
 
-# Adding this variable, so that in future if this needs to be modifed
+# Adding this variable, so that in future if this needs to be modified
 # Where the location of confFile would be manually provided, we
-# Should be able to read from that file :) 
+# Should be able to read from that file :)
 
 CONF_FILE=/etc/vdoconf.yml
 
@@ -73,34 +73,34 @@ _parse_vdo_options()
 
 _vdo_devdir()
 {
-local cur prev words cword options
-_init_completion || return
-COMPREPLY=( $( compgen -W "$(lsblk -pnro name)" -- "$cur" ))
+  local cur prev words cword options
+  _init_completion || return
+  COMPREPLY=( $( compgen -W "$(lsblk -pnro name)" -- "$cur" ))
 }
 
 _vdo_names()
 {
-local cur prev words cword options
-_init_completion || return
+  local cur prev words cword options
+  _init_completion || return
 
-# If conf file does not exist, return.
-if [ ! -f $CONF_FILE ]; then
-	return 
-fi
+  # If conf file does not exist, return.
+  if [ ! -f $CONF_FILE ]; then
+    return
+  fi
 
-# This is nice, however, you'll get an error :
-# vdo: ERROR - You must be root to use the "list" command
-# COMPREPLY=( $( compgen -W "$(vdo list --all)" -- "$cur" ))
-# You can use this, since this is better than the stuff written below.
-names=()
-while IFS= read -r line
-do
-        if [[ $line =~ \!VDOService ]]; then
-                names+=( $(echo $line | cut -d: -f1) )
-        fi
-done < $CONF_FILE
-#/etc/vdoconf.yml
-COMPREPLY=( $( compgen -W "$names" -- "$cur" ))
+  # This is nice, however, you'll get an error :
+  # vdo: ERROR - You must be root to use the "list" command
+  # COMPREPLY=( $( compgen -W "$(vdo list --all)" -- "$cur" ))
+  # You can use this, since this is better than the stuff written below.
+  names=()
+  while IFS= read -r line
+  do
+    if [[ $line =~ \!VDOService ]]; then
+      names+=( $(echo $line | cut -d: -f1) )
+    fi
+  done < $CONF_FILE
+  #/etc/vdoconf.yml
+  COMPREPLY=( $( compgen -W "$names" -- "$cur" ))
 }
 
 _stop()
@@ -189,10 +189,10 @@ _modify()
     --force|--verbose)
     return
     ;;
-# I probably shouldn't have added this.. note : remove this later.
-#    --indexMem)
-#    COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
-#    ;;
+    # I probably shouldn't have added this.. note : remove this later.
+    #    --indexMem)
+    #    COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
+    #    ;;
     --device)
     _vdo_devdir
     ;;
@@ -265,8 +265,8 @@ _enableDeduplication()
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo enableDeduplication )'  -- "$cur" ) )
   case "${prev}" in
     -n|--name)
-      _vdo_names
-      ;;
+    _vdo_names
+    ;;
     -f|--confFile|--logfile)
     _filedir
     ;;
@@ -332,7 +332,7 @@ _deactivate()
   local cur prev words cword options
   _init_completion || return
 
-  COMPREPLY=( $( compgen -W ' $DEFALT $( _parse_vdo_options vdo deactivate )'  -- "$cur" ) )
+  COMPREPLY=( $( compgen -W ' $( _parse_vdo_options vdo deactivate )'  -- "$cur" ) )
   case "${prev}" in
     -f|--confFile|--logfile)
     _filedir
@@ -352,10 +352,6 @@ _create()
     --force|--verbose)
     return
     ;;
-    # I probably shouldn't have added this.. note : remove this later.
-    #--indexMem)
-    #COMPREPLY=( $( compgen -W '0.25 0.5 0.75 {1..1024}' -- "$cur" ) )
-    #;;
     --activate|--compression|--deduplication|--emulate512|--sparseIndex)
     COMPREPLY=( $( compgen -W 'disabled enabled' -- "$cur" ) )
     ;;
