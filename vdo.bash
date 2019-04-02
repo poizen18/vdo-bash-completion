@@ -86,16 +86,9 @@ _vdo_names()
 {
   local cur prev words cword options
   _init_completion || return
-
-  # If conf file does not exist, return.
   if [ ! -f $CONF_FILE ]; then
     return
   fi
-
-  # This is nice, however, you'll get an error :
-  # vdo: ERROR - You must be root to use the "list" command
-  # COMPREPLY=( $( compgen -W "$(vdo list --all)" -- "$cur" ))
-  # You can use this, since this is better than the stuff written below.
   names=()
   while IFS= read -r line
   do
@@ -103,8 +96,7 @@ _vdo_names()
       names+=( $(echo $line | cut -d: -f1) )
     fi
   done < $CONF_FILE
-  #/etc/vdoconf.yml
-  COMPREPLY=( $( compgen -W "$names" -- "$cur" ))
+  COMPREPLY=( $( compgen -W  " ${names[*]}"  -- "$cur"))
 }
 
 _generic_function()
@@ -182,3 +174,5 @@ _vdo()
   fi
 } &&
 complete -F _vdo vdo
+
+# TODO: FIX VDO NAMES BEING PRINTED!!!
