@@ -4,6 +4,12 @@
 # agaikwad@redhat.com
 # https://github.com/poizen18/vdo-bash-completion
 
+# Adding this variable, so that in future if this needs to be modifed
+# Where the location of confFile would be manually provided, we
+# Should be able to read from that file :) 
+
+CONF_FILE=/etc/vdoconf.yml
+
 __parse_vdo_options ()
 {
   local option option2 i IFS=',/|';
@@ -76,7 +82,25 @@ _vdo_names()
 {
 local cur prev words cword options
 _init_completion || return
-COMPREPLY=( $( compgen -W "$(vdo list --all)" -- "$cur" ))
+
+# If conf file does not exist, return.
+if [ ! -f $CONF_FILE ]; then
+	return 
+fi
+
+# This is nice, however, you'll get an error :
+# vdo: ERROR - You must be root to use the "list" command
+# COMPREPLY=( $( compgen -W "$(vdo list --all)" -- "$cur" ))
+# You can use this, since this is better than the stuff written below.
+names=()
+while IFS= read -r line
+do
+        if [[ $line =~ \!VDOService ]]; then
+                names+=( $(echo $line | cut -d: -f1) )
+        fi
+done < $CONF_FILE
+#/etc/vdoconf.yml
+COMPREPLY=( $( compgen -W "$names" -- "$cur" ))
 }
 
 _stop()
