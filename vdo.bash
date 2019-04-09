@@ -8,11 +8,11 @@
 # Where the location of confFile would be manually provided, we
 # Should be able to read from that file :)
 
-# Why not have a function that does call something like :
-# function is $1, the argument is $2 and then everything else lies in
-# the same block.
-
 CONF_FILE=/etc/vdoconf.yml
+
+# This function will tokenize the INPUT that is given by the function
+#  _parse_vdo_options(). It will output all the options that have
+# two "--" in the beginning.
 
 __parse_vdo_options()
 {
@@ -53,6 +53,11 @@ __parse_vdo_options()
   printf '%s\n' "${option/=*/=}"
 }
 
+# This function does the hardwork of doing the following: 
+# let us assume you're running vdo activate 
+# It executes "vdo activate --help" and gets a list of possible 
+# options and then tokenizes them.
+
 _parse_vdo_options()
 {
   eval local cmd=$( quote "$1" );
@@ -76,12 +81,20 @@ _parse_vdo_options()
   done
 }
 
+# _vdo_devdir will give the list of devices that can be used
+# for vdo 
+
 _vdo_devdir()
 {
   local cur prev words cword options
   _init_completion || return
   COMPREPLY=( $( compgen -W "$(lsblk -pnro name)" -- "$cur" ))
 }
+
+# We parse the configuration file to understand the names of vdo
+# which are present. This may generate false positive if the 
+# conf file has names of vdo devices but they're not actually
+# present in the system 
 
 _vdo_names()
 {
@@ -100,22 +113,30 @@ _vdo_names()
   COMPREPLY=( $( compgen -W  " ${names[*]}"  -- "$cur"))
 }
 
+
 _generic_function()
 {
-# Added activate , works fine
+
   local cur prev words cword options
   _init_completion || return
+
+# We check for filename completion before after the first compreply.
+# Otherwise the options of COMPREPLY and _filedir will be mixed.
+  case "${prev}" in
+	-f|--confFile)
+# since the configuration file has the extention yml, we only display
+# the files with the suffix yml.
+		_filedir yml
+		return
+	;;
+	--logfile)
+		_filedir
+		return
+	;;
+  esac
+
   COMPREPLY=( $( compgen -W '$( _parse_vdo_options vdo $1 )' -- "$cur" ) )
   case "${prev}" in
-    --verbose|--all|-a)
-    return
-    ;;
-    --vdoLogicalSize)
-    COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
-    ;;
-    -f|--confFile|--logfile)
-    _filedir
-    ;;
     -n|--name)
         if [[ "$1" == "create" ]]
         then
@@ -127,14 +148,8 @@ _generic_function()
     --writePolicy)
     COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
     ;;
-    --force|--verbose)
-    return
-    ;;
     --activate|--compression|--deduplication|--emulate512|--sparseIndex)
     COMPREPLY=( $( compgen -W 'disabled enabled' -- "$cur" ) )
-    ;;
-    --writePolicy)
-    COMPREPLY=( $( compgen -W 'sync async auto' -- "$cur" ) )
     ;;
     --vdoLogLevel)
     COMPREPLY=( $( compgen -W \
@@ -142,12 +157,6 @@ _generic_function()
     ;;
     --device)
       _vdo_devdir
-      ;;
-    --blockMapCacheSize|--maxDiscardSize|--vdoLogicalSize|--vdoSlabSize )
-    COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
-    ;;
-    --blockMapCacheSize|--maxDiscardSize )
-    COMPREPLY=( $( compgen -W 'B K M G T P E' -- "$cur" ) )
     ;;
 
   esac
